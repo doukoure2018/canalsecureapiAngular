@@ -1,0 +1,98 @@
+<ng-container *ngIf="campaignState$ | async as state">
+  <app-navbar [user]="state.appData?.data?.user"></app-navbar>
+  <section>
+    <div class="container">
+      <nav aria-label="breadcrumb" style="margin-top: 8px">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a [routerLink]="['/']">Home</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Nouvelle Campagne
+          </li>
+        </ol>
+      </nav>
+      <div class="row justify-content-center">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="text-center">
+                <h4>
+                  <i style="margin-right: 5px" class="bi bi-megaphone-fill"></i>
+                  Nouvelle campagne
+                </h4>
+              </div>
+              <!-- Error Message -->
+              <div *ngIf="state.error"
+                class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
+                {{ state.error }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"
+                  aria-label="Close"></button>
+              </div>
+
+              <!-- Success Message -->
+              <div *ngIf="isDataSaved$ | async"
+                class="alert alert-danger bg-success text-light border-0 alert-dismissible fade show" role="alert">
+                {{ state.appData?.message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"
+                  aria-label="Close"></button>
+              </div>
+
+              <form #campaignForm="ngForm" (submit)="createNewCampaign(campaignForm)">
+                <div class="row">
+                  <input type="hidden" name="id_user" id="id_user" [ngModel]="state.appData?.data?.user?.id" />
+                  <div class="col-md-6" style="margin-bottom: 15px">
+                    <div class="form-group">
+                      <label>Libélé de la Campagne </label>
+                      <textarea class="form-control" id="name" name="name" rows="3" ngModel required></textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-6" style="margin-bottom: 15px">
+                    <label>Status</label>
+                    <select name="type" ngModel="ATTENTE" class="form-control" required>
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option [selected]="true">ATTENTE</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6" style="margin-bottom: 15px">
+                    <label>Mode </label>
+                    <select class="form-control" name="mode" id="mode" [(ngModel)]="mode" (onchange)="onModeChange()"
+                      required>
+                      <option [selected]="true" value="BROADCAST">
+                        BROADCAST
+                      </option>
+                      <option value="UNICAST">UNICAST</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6" style="margin-bottom: 15px">
+                    <div class="form-group">
+                      <label>Nombre total SMS</label>
+                      <input [(ngModel)]="totalSms" [disabled]="mode !== 'BROADCAST'"
+                        (ngModelChange)="onTotalSmsChange()" type="number" name="totalSms" id="totalSms"
+                        class="form-control" placeholder="Definir le nombre total sms pour cette campagne" required />
+                      <small *ngIf="showMessageBalance$ | async" class="text-danger">
+                        Attention! Nombre Sms disponible est : {{ state.appData?.data?.balanceSms}}</small>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <button [disabled]="
+                      state.dataState === DataState.LOADING ||
+                      campaignForm.invalid || campaignForm.pristine ||
+                      (isLoading$ | async) || (showMessageBalance$ | async)
+                    " type="submit" class="btn btn-primary mt-5">
+                    <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm" role="status"
+                      aria-hidden="true" style="margin-right: 5px"></span>
+                    <span *ngIf="isLoading$ | async">Saving...</span>
+                    <span *ngIf="!(isLoading$ | async)">Enregister Campagne</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>

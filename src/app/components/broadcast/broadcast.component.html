@@ -1,0 +1,115 @@
+<ng-container *ngIf="messageState$ | async as state" [ngSwitch]="state.dataState">
+  <ng-container *ngSwitchCase="DataState.LOADED">
+    <app-navbar [user]="state.appData?.data?.user"></app-navbar>
+    <div class="container mt-4">
+      <ng-container [ngSwitch]="state.appData?.data?.campaign?.mode">
+        <h4 class="fw-bold text-start mb-3">
+          {{ state.appData?.data?.campaign?.mode }}
+        </h4>
+        <!-- File upload form -->
+        <form class="d-flex align-items-center mb-5" (ngSubmit)="onFileSubmit()" enctype="multipart/form-data">
+          <input class="form-control me-2" [disabled]="isLoading$ | async" type="file" (change)="onFileSelect($event)"
+            accept=".xlsx, .xls" style="width: auto" />
+          <button [disabled]="!selectedFile || (isLoading$ | async)" type="submit" class="btn btn-primary">
+            <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm" role="status"
+              aria-hidden="true"></span>
+            <span *ngIf="isLoading$ | async">Chargement ...</span>
+            <span *ngIf="!(isLoading$ | async)">Importer le fichier</span>
+          </button>
+        </form>
+
+        <div *ngIf="fileStatus$ | async as status" class="row align-items-center mb-2">
+          <div *ngIf="status && status.percent > 0" class="progress">
+            {{ status | json }}
+            <div class="progress-bar bg-success" role="progressbar" [style.width.%]="status.percent"
+              [attr.aria-valuenow]="status.percent" aria-valuemin="0" aria-valuemax="100">
+              {{ status.percent }} %
+            </div>
+          </div>
+          <div class="col-sm-4 d-flex align-items-center gap-2">
+            <button [disabled]="isLoadingReport$ | async" (click)="downloadMessage()" type="button"
+              class="btn btn-outline-secondary">
+              <i class="bi bi-file-earmark-excel"></i>
+              <span *ngIf="isLoadingReport$ | async" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
+              <span *ngIf="isLoadingReport$ | async">En cours ...</span>
+              <span *ngIf="!(isLoadingReport$ | async)">Export</span>
+            </button>
+          </div>
+
+          <!-- Right Search Form -->
+          <div class="col-sm-8">
+            <div class="d-flex justify-content-end">
+              <form class="row g-2">
+                <div class="col-auto">
+                  <select name="status" (change)="applyFilter($event)" [(ngModel)]="selectedItem" #status="ngModel"
+                    class="form-select" required>
+                    <option value="" disabled selected>Select Status</option>
+                    <option value="SENT">SENT</option>
+                    <option value="FAILED">FAILED</option>
+                    <option value="PENDING">PENDING</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages table -->
+        <div *ngIf="isLoading$ | async">Loading...</div>
+        <ng-container *ngIf="!(isLoading$ | async) && state.dataState === DataState.LOADED">
+          <table mat-table [dataSource]="dataSource" matSort class="table table-hover table-bordered table-striped">
+            <ng-container matColumnDef="index">
+              <th mat-header-cell *matHeaderCellDef class="text-center"> # </th>
+              <td mat-cell *matCellDef="let infoMessage; let i = index" class="text-center">
+                {{ i + 1 }}
+              </td>
+            </ng-container>
+            <!-- Message Column -->
+            <ng-container matColumnDef="message">
+              <th mat-header-cell *matHeaderCellDef class="text-center"> Message </th>
+              <td mat-cell *matCellDef="let infoMessage" class="text-center">
+                {{ infoMessage.message }}
+              </td>
+            </ng-container>
+
+            <!-- Contact Column -->
+            <ng-container matColumnDef="recipientNumber">
+              <th mat-header-cell *matHeaderCellDef class="text-center"> Contact </th>
+              <td mat-cell *matCellDef="let infoMessage" class="text-center">
+                {{ infoMessage.recipientNumber }}
+              </td>
+            </ng-container>
+
+            <!-- Sent Date Column -->
+            <ng-container matColumnDef="sentAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> Date Envoi </th>
+              <td mat-cell *matCellDef="let infoMessage" class="text-center">
+                {{ infoMessage.sentAt | date: 'dd/MM/yyyy, HH:mm' }}
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> Status </th>
+              <td mat-cell *matCellDef="let infoMessage" class="text-center">
+                <span class="badge text-light px-2 py-1" [ngClass]="{
+                  'bg-success': infoMessage.status === 'SENT',
+                  'bg-primary': infoMessage.status === 'PENDING',
+                  'bg-danger': infoMessage.status === 'FAILED'
+                }">
+                  {{ infoMessage.status }}
+                </span>
+              </td>
+            </ng-container>
+            <!-- Header and Row Definitions -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-primary"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="align-middle"></tr>
+          </table>
+          <!-- Paginator -->
+          <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+</ng-container>

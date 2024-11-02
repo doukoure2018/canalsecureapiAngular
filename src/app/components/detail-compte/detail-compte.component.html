@@ -1,0 +1,320 @@
+<ng-container *ngIf="detailCompteState$ | async as state">
+  <app-navbar [user]="state?.appData?.data?.user"></app-navbar>
+  <section>
+    <div class="container">
+      <!-- Breadcrumb -->
+      <nav
+        aria-label="breadcrumb"
+        class="breadcrumb-container"
+        style="margin-top: 8px"
+      >
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a [routerLink]="['/']">Home</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a [routerLink]="['/comptes']">Comptes</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ state?.appData?.data?.user?.firstName }}
+            {{ state?.appData?.data?.user?.lastName }}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Two-Column Layout -->
+      <div
+        class="bg-white shadow-lg rounded-lg d-flex"
+        style="border-radius: 8px"
+      >
+        <!-- Profile Section (Left Column) -->
+        <div class="profile-tab-nav border-right p-4" style="min-width: 250px">
+          <div class="text-center mb-3">
+            <img
+              [src]="state?.appData?.data?.compte?.imageUrl"
+              [alt]="state?.appData?.data?.compte?.firstName"
+              width="100"
+              height="100"
+              class="img-fluid rounded-circle shadow"
+              loading="lazy"
+            />
+            <h4>{{ state?.appData?.data?.compte?.firstName }}</h4>
+            <span
+              >Since
+              {{
+                state?.appData?.data?.compte?.createdAt | date : "MMMM d, y"
+              }}</span
+            >
+          </div>
+
+          <!-- Nav Pills -->
+          <div
+            class="nav flex-column nav-pills"
+            role="tablist"
+            aria-orientation="vertical"
+          >
+            <a
+              class="nav-link active"
+              id="security"
+              data-bs-toggle="pill"
+              data-bs-target="#security-tab"
+              role="tab"
+            >
+              <i class="bi bi-shield-shaded"></i> Autorisation
+            </a>
+            <a
+              class="nav-link"
+              id="application"
+              data-bs-toggle="pill"
+              data-bs-target="#application-tab"
+              role="tab"
+            >
+              <i class="bi bi-gear"></i> Paramètre Compte
+            </a>
+          </div>
+
+          <!-- Custom Switch for Activity Log -->
+          <div
+            class="mt-3"
+            *ngIf="canModifyRole(state.appData?.data?.user?.roleName!)"
+          >
+            <div class="custom-control custom-switch">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="activityLog"
+                (change)="toggleLogs()"
+                [disabled]="isLoading$ | async"
+                [checked]="showLogs$ | async"
+              />
+              <label class="custom-control-label" for="activityLog"></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Section (Right Column) -->
+        <div class="p-4 w-100">
+          <div class="tab-content" id="v-pills-tabContent">
+            <!-- Security Tab -->
+            <div
+              class="tab-pane fade show active"
+              id="security-tab"
+              role="tabpanel"
+              aria-labelledby="security"
+            >
+              <h5 class="mb-4">Paramètres d'autorisation</h5>
+              <form #roleForm="ngForm" (submit)="updateRole(roleForm)">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <input
+                        [type]="
+                          state.appData?.data?.compte?.id ? 'hidden' : 'text'
+                        "
+                        name="idCompte"
+                        id="idCompte"
+                        [ngModel]="state.appData?.data?.compte?.id"
+                      />
+                      <label>Role Name</label>
+                      <select
+                        [ngModel]="state.appData?.data?.compte?.roleName"
+                        name="roleName"
+                        class="form-control"
+                        [disabled]="
+                          !canModifyRole(state.appData?.data?.user?.roleName!)
+                        "
+                        required
+                      >
+                        <option
+                          *ngFor="let role of state.appData?.data?.roles"
+                          [ngValue]="role.name"
+                          [selected]="
+                            state.appData?.data?.compte?.roleName === role.name
+                          "
+                        >
+                          {{ role.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Role Permissions</label>
+                      <input
+                        *ngFor="
+                          let permission of state.appData?.data?.compte?.permissions?.split(
+                            ','
+                          )
+                        "
+                        type="text"
+                        [value]="permission"
+                        class="form-control mb-2"
+                        [disabled]="true"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <button
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    ((isLoading$ | async) ?? false)
+                  "
+                  type="submit"
+                  class="btn btn-primary"
+                >
+                  <span
+                    *ngIf="isLoading$ | async"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                    style="margin-right: 5px"
+                  ></span>
+                  <span *ngIf="isLoading$ | async">Loading...</span>
+                  <span *ngIf="!(isLoading$ | async)">
+                    Mettre à jour le rôle de l'utilisateur
+                  </span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Account Settings Tab -->
+            <div
+              class="tab-pane fade"
+              id="application-tab"
+              role="tabpanel"
+              aria-labelledby="application"
+            >
+              <h5 class="mb-4">Account Settings</h5>
+              <form
+                #settingForm="ngForm"
+                (submit)="updateAccountSettings(settingForm)"
+              >
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="form-check">
+                      <input
+                        [type]="
+                          state.appData?.data?.compte?.id ? 'hidden' : 'text'
+                        "
+                        name="id"
+                        id="id"
+                        [ngModel]="state.appData?.data?.compte?.id"
+                      />
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="enabled"
+                        [ngModel]="state.appData?.data?.compte?.enabled"
+                        name="enabled"
+                        [disabled]="
+                          !canModifyRole(state.appData?.data?.user?.roleName!)
+                        "
+                        [checked]="state.appData?.data?.user?.enabled"
+                      />
+                      <label class="form-check-label" for="enabled">
+                        {{
+                          state.appData?.data?.compte?.enabled
+                            ? "Etat actif. Désactivez maintenant"
+                            : "Etat désactif. Activez maintenant"
+                        }}</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="notLocked"
+                        [ngModel]="state.appData?.data?.user?.nonLocked"
+                        name="notLocked"
+                        [disabled]="
+                          !canModifyRole(
+                            state.appData?.data?.user?.roleName!
+                          ) || ((isLoading$ | async) ?? false)
+                        "
+                        [checked]="state.appData?.data?.user?.nonLocked"
+                      />
+                      <label class="form-check-label" for="notLocked">
+                        {{
+                          state.appData?.data?.compte?.nonLocked
+                            ? "Débloquer le Compte"
+                            : "Bloque le Compte"
+                        }}</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <button
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    ((isLoading$ | async) ?? false)
+                  "
+                  type="submit"
+                  class="btn btn-primary"
+                >
+                  <span
+                    *ngIf="isLoading$ | async"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                    style="margin-right: 5px"
+                  ></span>
+                  <span *ngIf="isLoading$ | async">Loading...</span>
+                  <span *ngIf="!(isLoading$ | async)"
+                    >Mettre à jour les paramètres utilisateur
+                  </span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Activities Section (If logs are enabled) -->
+      <div *ngIf="showLogs$ | async" class="row mt-4">
+        <div class="col-xl-12">
+          <div class="card rounded-lg">
+            <div class="card-body">
+              <h5 class="card-title">Activités du compte</h5>
+              <h6 class="card-subtitle mb-2 text-muted">
+                Dernières activités sur le compte de
+                {{ state.appData?.data?.compte?.firstName }}
+                {{ state.appData?.data?.compte?.lastName }}
+              </h6>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Device</th>
+                    <th scope="col">IP Address</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let event of state.appData?.data?.events">
+                    <td>{{ event.device }}</td>
+                    <td>{{ event.ipAddress }}</td>
+                    <td>{{ event.createdAt | date : "MMMM d, y, h:mm a" }}</td>
+                    <td>
+                      <span
+                        class="badge"
+                        [ngClass]="getEventBadgeClass(event.eventType!)"
+                      >
+                        {{ event.eventType }}
+                      </span>
+                    </td>
+                    <td>{{ event.description }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-warning">Report</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>

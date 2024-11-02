@@ -1,0 +1,172 @@
+<ng-container *ngIf="messageState$ | async as state" [ngSwitch]="state.dataState">
+    <ng-container *ngSwitchCase="DataState.LOADED">
+        <app-navbar [user]="state.appData?.data?.user"></app-navbar>
+        <div class="container mt-4">
+            <ng-container [ngSwitch]="state.appData?.data?.campaign?.mode">
+                <h4 class="fw-bold text-start mb-3">
+                    {{ state.appData?.data?.campaign?.mode }}
+                </h4>
+                <!-- File upload form -->
+                <form class="d-flex align-items-center mb-5" (ngSubmit)="onFileSubmit()" enctype="multipart/form-data">
+                    <input class="form-control me-2" [disabled]="isLoading$ | async" type="file"
+                        (change)="onFileSelect($event)" accept=".xlsx, .xls" style="width: auto" />
+                    <button [disabled]="!selectedFile || (isLoading$ | async)" type="submit" class="btn btn-primary">
+                        <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm" role="status"
+                            aria-hidden="true"></span>
+                        <span *ngIf="isLoading$ | async">Chargement ...</span>
+                        <span *ngIf="!(isLoading$ | async)">Téléverser le fichier</span>
+                    </button>
+                </form>
+
+                <div *ngIf="fileStatus$ | async as status" class="row align-items-center mb-2">
+                    <div *ngIf="status && status.percent > 0" class="progress">
+                        {{ status | json }}
+                        <div class="progress-bar bg-success" role="progressbar" [style.width.%]="status.percent"
+                            [attr.aria-valuenow]="status.percent" aria-valuemin="0" aria-valuemax="100">
+                            {{ status.percent }} %
+                        </div>
+                    </div>
+                    <div class="col-sm-4 d-flex align-items-center gap-2">
+                        <button [disabled]="isLoadingReport$ | async" (click)="downloadMessage()" type="button"
+                            class="btn btn-outline-secondary">
+                            <i class="bi bi-file-earmark-excel"></i>
+                            <span *ngIf="isLoadingReport$ | async" class="spinner-border spinner-border-sm"
+                                role="status" aria-hidden="true"></span>
+                            <span *ngIf="isLoadingReport$ | async">En cours ...</span>
+                            <span *ngIf="!(isLoadingReport$ | async)">Export</span>
+                        </button>
+                    </div>
+
+                    <!-- Right Search Form -->
+                    <div class="col-sm-8">
+                        <div class="d-flex justify-content-end">
+                            <form #searchForm="ngForm" (ngSubmit)="searchCampaigns(searchForm)" class="row g-2">
+                                <div class="col-auto">
+                                    <select name="status" [(ngModel)]="selectedItem" #status="ngModel"
+                                        class="form-select" required>
+                                        <option value="" disabled selected>Select Status</option>
+                                        <option value="SENT">SENT</option>
+                                        <option value="FAILED">FAILED</option>
+                                        <option value="PENDING">PENDING</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-primary fw-bold">
+                                        Retrouver
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages table -->
+                <div *ngIf="isLoading$ | async">Loading...</div>
+                <ng-container *ngIf="!(isLoading$ | async) && state.dataState === DataState.LOADED">
+                    <table class="table table-hover table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="text-center" scope="col">ID</th>
+                                <th scope="col">Numéro du destinataire</th>
+                                <th scope="col">Date Envoi</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let message of state.appData?.data?.page?.content" class="align-middle">
+                                <td class="text-center">{{ message.id }}</td>
+                                <td>{{ message.recipientNumber }}</td>
+                                <td>{{ message.sentAt | date : "dd/MM/yyyy, HH:mm" }}</td>
+                                <td>
+                                    <span class="badge text-light px-2 py-1" [ngClass]="{
+                        'bg-success': message.status === 'SENT',
+                        'bg-primary': message.status === 'PENDING',
+                        'bg-danger': message.status === 'FAILED'
+                      }">
+                                        {{ message.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <nav *ngIf="state.appData?.data?.page?.content?.length! > 0" aria-label="Page navigation example">
+                        <ul class="pagination justify-content-end">
+                            <li [ngClass]="(currentPage$ | async) === 0 ? 'disabled' : ''" class="page-item pointer">
+                                <a (click)="goToNextOrPreviousPage('backward')" class="page-link">&laquo; Prev</a>
+                            </li>
+                            <li *ngFor="let i of [].constructor(state.appData?.data?.page?.totalPages); let index = index"
+                                class="page-item pointer">
+                                <a (click)="goToPage(index)"
+                                    [ngClass]="index === (currentPage$ | async) ? 'active' : ''" class="page-link">
+                                    {{ index + 1 }}
+                                </a>
+                            </li>
+                            <li [ngClass]="(currentPage$ | async) === (state.appData?.data?.page?.totalPages! - 1) ? 'disabled' : ''"
+                                class="page-item pointer">
+                                <a (click)="goToNextOrPreviousPage('forward')" class="page-link">Next &raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-container>
+</ng-container>
+
+
+
+
+
+
+<table class="table table-hover table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th class="text-center" scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Date Created</th>
+            <th scope="col">Status</th>
+            <th scope="col">Mode</th>
+            <th scope="col">Total Messages</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody class="table-body">
+        <tr *ngFor="let campaign of state.appData?.data?.campaigns" class="align-middle">
+            <th class="text-center">{{ campaign.id }}</th>
+            <td>{{ campaign.name }}</td>
+            <td>{{ campaign.createdAt | date : "MMM d, y, h:mm a" }}</td>
+            <td>
+                <span class="badge rounded-pill" [ngClass]="{
+              'bg-success': campaign.status === 'ACTIVE',
+              'bg-primary': campaign.status === 'ATTENTE',
+              'bg-danger': campaign.status === 'CANCELED'
+            }">
+                    {{ campaign.status }}
+                </span>
+            </td>
+            <td>
+                <span class="badge rounded-pill" [ngClass]="{
+              'bg-secondary': campaign.mode === 'BROADCAST',
+              'bg-warning text-dark': campaign.mode === 'UNICAST'
+            }">
+                    {{ campaign.mode }}
+                </span>
+            </td>
+            <td>{{ campaign.totalSms }}</td>
+            <td>
+                <button type="button" (click)="
+              selectCampaign(
+                campaign,
+                state.appData?.data?.user!,
+                campaign.mode!
+              )
+            " class="btn btn-sm btn-info">
+                    <i class="fas fa-eye"></i> View
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

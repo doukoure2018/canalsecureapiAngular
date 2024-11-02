@@ -1,0 +1,213 @@
+<ng-container
+  *ngIf="compteState$ | async as state"
+  [ngSwitch]="state.dataState"
+>
+  <ng-container>
+    <app-navbar [user]="state.appData?.data?.user"></app-navbar>
+    <section>
+      <div class="container">
+        <nav aria-label="breadcrumb" style="margin-top: 8px">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a [routerLink]="['/']">Home</a>
+            </li>
+            <li class="breadcrumb-item active">
+              <a [routerLink]="['/comptes']">Comptes</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ state?.appData?.data?.user?.firstName }}
+              {{ state?.appData?.data?.user?.lastName }}
+            </li>
+          </ol>
+        </nav>
+        <div class="row mt-3">
+          <div class="col">
+            <h4 class="fw-bold text-start">Ajout Nouveau Compte</h4>
+          </div>
+        </div>
+        <div class="col-xm-12">
+          <form
+            #registerForm="ngForm"
+            (ngSubmit)="register(registerForm)"
+            class="needs-validation"
+            novalidate
+          >
+            <div class="row">
+              <!-- First Name and Last Name in a two-column layout -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="firstName">First Name</label>
+                <input
+                  type="text"
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    (isLoading$ | async) ||
+                    state.dataState === DataState.LOADING
+                  "
+                  ngModel
+                  name="firstName"
+                  id="firstName"
+                  class="form-control"
+                  required
+                  minlength="2"
+                  placeholder="Enter your first name"
+                />
+                <div class="invalid-feedback">
+                  Please provide a valid first name.
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input
+                  type="text"
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    (isLoading$ | async) ||
+                    state.dataState === DataState.LOADING
+                  "
+                  ngModel
+                  name="lastName"
+                  id="lastName"
+                  class="form-control"
+                  required
+                  minlength="2"
+                  placeholder="Enter your last name"
+                />
+                <div class="invalid-feedback">
+                  Please provide a valid last name.
+                </div>
+              </div>
+            </div>
+
+            <!-- Phone and Email Address in a two-column layout -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input
+                  type="text"
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    (isLoading$ | async) ||
+                    state.dataState === DataState.LOADING
+                  "
+                  ngModel
+                  name="phone"
+                  id="phone"
+                  class="form-control"
+                  required
+                  minlength="2"
+                  placeholder="Enter your phone number"
+                />
+                <div class="invalid-feedback">
+                  Please provide a valid phone number.
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input
+                  type="email"
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    (isLoading$ | async) ||
+                    state.dataState === DataState.LOADING
+                  "
+                  ngModel
+                  name="email"
+                  id="email"
+                  class="form-control"
+                  required
+                  minlength="3"
+                  placeholder="Enter your email address"
+                />
+                <div class="invalid-feedback">
+                  Please provide a valid email.
+                </div>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  type="password"
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    (isLoading$ | async) ||
+                    state.dataState === DataState.LOADING
+                  "
+                  ngModel
+                  name="password"
+                  id="password"
+                  class="form-control"
+                  required
+                  minlength="4"
+                  placeholder="Enter your password"
+                />
+                <div class="invalid-feedback">
+                  Password must be at least 4 characters long.
+                </div>
+              </div>
+            </div>
+
+            <!-- Role Name -->
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Role Name</label>
+                <select
+                  ngModel
+                  [disabled]="
+                    !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                    ((isLoading$ | async) ?? false)
+                  "
+                  name="roleName"
+                  class="form-control"
+                  required
+                >
+                  <option
+                    *ngFor="let role of state.appData?.data?.roles"
+                    [selected]="
+                      state.appData?.data?.user?.roleName === role.name
+                    "
+                    [disabled]="
+                      !canModifyRole(state.appData?.data?.user?.roleName!) ||
+                      ((isLoading$ | async) ?? false)
+                    "
+                    [ngValue]="role.name"
+                  >
+                    {{ role.name }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">Please select a valid role.</div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="row">
+              <div class="col-md-12 d-flex justify-content-center mb-4">
+                <button
+                  [disabled]="
+                    state.dataState === DataState.LOADING ||
+                    registerForm.invalid ||
+                    registerForm.pristine ||
+                    (isLoading$ | async)
+                  "
+                  type="submit"
+                  class="btn btn-primary btn-block"
+                >
+                  <span
+                    *ngIf="isLoading$ | async"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  <span *ngIf="isLoading$ | async"> Saving... </span>
+                  <span *ngIf="!(isLoading$ | async)"> Create Account </span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+</ng-container>

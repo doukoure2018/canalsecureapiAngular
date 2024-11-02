@@ -1,0 +1,42 @@
+<section>
+  <div class="container mt-2">
+    <div class="container bootstrap snippets bootdey">
+      <div class="row">
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="mini-stat clearfix bg-facebook rounded">
+            <span class="mini-stat-icon">
+              <i class="bi bi-envelope-fill fg-facebook"></i>
+            </span>
+            <div class="mini-stat-info text-end">
+              <span>{{ stats?.balance }}</span>
+              Nombre Sms avant : {{ stats?.expiredDate | date}}
+            </div>
+
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="mini-stat clearfix bg-googleplus rounded">
+            <span class="mini-stat-icon">
+              <i class="bi bi-envelope-fill text-success"></i>
+            </span>
+            <div class="mini-stat-info text-end">
+              <span>{{ stats?.nbreSentMessage }}</span>
+              Total Sms Envoyé
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="mini-stat clearfix bg-twitter rounded">
+            <span class="mini-stat-icon">
+              <i class="bi bi-envelope-fill text-danger"></i>
+            </span>
+            <div class="mini-stat-info text-end">
+              <span>{{ stats?.nbreFailledMessage }}</span>
+              Total Sms Echoué
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
