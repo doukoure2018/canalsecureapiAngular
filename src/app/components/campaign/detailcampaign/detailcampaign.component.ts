@@ -8,12 +8,16 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { State } from '../../interfaces/state';
-import { CustomHttpResponse, MessageState } from '../../interfaces/appstates';
-import { DataState } from '../../enum/datastate.enum';
+
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { CampaignService } from '../../services/campaign.service';
 import { NgForm } from '@angular/forms';
+import { State } from '../../../interfaces/state';
+import {
+  CustomHttpResponse,
+  MessageState,
+} from '../../../interfaces/appstates';
+import { DataState } from '../../../enum/datastate.enum';
+import { CampaignService } from '../../../services/campaign.service';
 
 @Component({
   selector: 'app-detailcampaign',

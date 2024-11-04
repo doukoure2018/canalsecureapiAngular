@@ -1,0 +1,90 @@
+<ng-container *ngIf="messageState$ | async as state" [ngSwitch]="state.dataState">
+  <ng-container>
+    <app-navbar [user]="state.appData?.data?.user"></app-navbar>
+    <div class="container mt-3">
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
+          <li class="breadcrumb-item">
+            <a [routerLink]="['/modify']">Modifier la Campagne</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ state.appData?.data?.campaign?.mode }}
+          </li>
+        </ol>
+      </nav>
+
+      <h4 class="fw-bold text-start mb-3">
+        {{ state.appData?.data?.campaign?.mode }}
+      </h4>
+
+      <!-- Error message -->
+      <div *ngIf="state.error" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show mb-3"
+        role="alert">
+        {{ state.error }}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <!-- Unicast message form -->
+      <form #messageForm="ngForm" (submit)="sendMessageUnicast(messageForm)" class="border p-3 mb-3 rounded">
+        <div class="form-check mb-3">
+          <input type="radio" id="BillingOptRadio1" name="billingOptions" class="form-check-input" checked />
+          <label class="form-check-label font-16 fw-bold" for="BillingOptRadio1">Formulaire d'envoie</label>
+        </div>
+        <input type="hidden" name="campaign_id" id="campaign_id" [ngModel]="state.appData?.data?.campaign?.id" />
+        <input type="hidden" name="id_user" id="id_user" [ngModel]="state.appData?.data?.user?.id" />
+        <div class="mb-3">
+          <label for="message" class="form-label">Message Pour la Campagne</label>
+          <textarea class="form-control" name="message" id="message" rows="2"
+            [ngModel]="state.appData?.data?.campaign?.name" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="recipientNumber" class="form-label">Contact destinataire</label>
+          <input type="text" id="recipientNumber" name="recipientNumber" class="form-control" ngModel
+            (keypress)="validateNumberInput($event)" maxlength="9" required />
+        </div>
+
+        <button [disabled]="
+            state.dataState === DataState.LOADING ||
+            messageForm.invalid ||
+            messageForm.pristine ||
+            (isLoading$ | async)
+          " type="submit" class="btn btn-primary btn-block">
+          <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+            style="margin-right: 5px"></span>
+          <span *ngIf="isLoading$ | async">Encours...</span>
+          <span *ngIf="!(isLoading$ | async)">Enregister & Envoyer</span>
+        </button>
+      </form>
+
+      <!-- Unicast messages table -->
+      <table class="table table-hover table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th class="text-center" scope="col">ID</th>
+            <th scope="col">Numéro du destinataire</th>
+            <th scope="col">Date Envoi</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let message of state.appData?.data?.messages" class="align-middle">
+            <td class="text-center">{{ message.id }}</td>
+            <td>{{ message.recipientNumber }}</td>
+            <td>{{ message.sentAt | date : "dd/MM/yyyy, HH:mm" }}</td>
+            <td>
+              <span class="badge text-light px-2 py-1" [ngClass]="{
+                  'bg-success': message.status === 'SENT',
+                  'bg-primary': message.status === 'PENDING',
+                  'bg-danger': message.status === 'FAILED'
+                }">
+                {{ message.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</ng-container>

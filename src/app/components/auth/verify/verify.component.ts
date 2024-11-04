@@ -11,11 +11,11 @@ import {
 
 import { Location } from '@angular/common';
 import { NgForm } from '@angular/forms';
-import { accountType, verifyState } from '../../interfaces/appstates';
-import { User } from '../../interfaces/User';
-import { DataState } from '../../enum/datastate.enum';
+import { accountType, verifyState } from '../../../interfaces/appstates';
+import { User } from '../../../interfaces/User';
+import { DataState } from '../../../enum/datastate.enum';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-verify',

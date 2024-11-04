@@ -14,12 +14,13 @@ import { User } from '../interfaces/User';
 import { Compte } from '../interfaces/compte';
 import { SettingForm } from '../interfaces/setting';
 import { NewPasswordForm } from '../interfaces/newPasswordForm';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private readonly server: string = 'http://localhost:8080/auth/secureapi';
+  private readonly server: string = environment.API_BASE_URL + '/secureapi';
   /**
    * How to install it
    * npm install @auth0/angular-jwt

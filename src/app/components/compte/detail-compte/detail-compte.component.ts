@@ -8,16 +8,16 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { State } from '../../interfaces/state';
+import { State } from '../../../interfaces/state';
 import {
   CustomHttpResponse,
   DetailCompteState,
-} from '../../interfaces/appstates';
-import { DataState } from '../../enum/datastate.enum';
-import { UserService } from '../../services/user.service';
+} from '../../../interfaces/appstates';
+import { DataState } from '../../../enum/datastate.enum';
+import { UserService } from '../../../services/user.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { EventType } from '../../enum/event-type.enum';
+import { EventType } from '../../../enum/event-type.enum';
 import { response } from 'express';
 
 @Component({

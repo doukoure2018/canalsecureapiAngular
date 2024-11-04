@@ -8,11 +8,11 @@ import {
   of,
   startWith,
 } from 'rxjs';
-import { State } from '../../interfaces/state';
-import { CompteState, CustomHttpResponse } from '../../interfaces/appstates';
-import { DataState } from '../../enum/datastate.enum';
+import { State } from '../../../interfaces/state';
+import { CompteState, CustomHttpResponse } from '../../../interfaces/appstates';
+import { DataState } from '../../../enum/datastate.enum';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../../services/user.service';
 import { response } from 'express';
 import { NgForm } from '@angular/forms';
 

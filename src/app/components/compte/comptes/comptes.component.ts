@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../services/user.service';
 import {
   BehaviorSubject,
   catchError,
@@ -8,12 +7,13 @@ import {
   of,
   startWith,
 } from 'rxjs';
-import { CompteState, CustomHttpResponse } from '../../interfaces/appstates';
-import { DataState } from '../../enum/datastate.enum';
-import { State } from '../../interfaces/state';
-import { Compte } from '../../interfaces/compte';
-import { SettingForm } from '../../interfaces/setting';
+
 import { Router } from '@angular/router';
+import { State } from '../../../interfaces/state';
+import { DataState } from '../../../enum/datastate.enum';
+import { CustomHttpResponse, CompteState } from '../../../interfaces/appstates';
+import { Compte } from '../../../interfaces/compte';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-comptes',

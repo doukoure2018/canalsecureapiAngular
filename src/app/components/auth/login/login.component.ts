@@ -7,12 +7,12 @@ import {
   of,
   startWith,
 } from 'rxjs';
-import { LoginState } from '../../interfaces/appstates';
-import { DataState } from '../../enum/datastate.enum';
+import { LoginState } from '../../../interfaces/appstates';
+import { DataState } from '../../../enum/datastate.enum';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../../services/user.service';
 import { NgForm } from '@angular/forms';
-import { Key } from '../../enum/key.enum';
+import { Key } from '../../../enum/key.enum';
 import { error } from 'console';
 import { response } from 'express';
 

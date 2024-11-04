@@ -10,22 +10,20 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { State } from '../../interfaces/state';
-import {
-  CustomHttpResponse,
-  MessageState,
-  PaginationMessageState,
-} from '../../interfaces/appstates';
-import { DataState } from '../../enum/datastate.enum';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { CampaignService } from '../../services/campaign.service';
-import { NgForm } from '@angular/forms';
 import { saveAs } from 'file-saver';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
-import { Message } from '../../interfaces/message';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { State } from '../../../interfaces/state';
+import {
+  CustomHttpResponse,
+  MessageState,
+} from '../../../interfaces/appstates';
+import { DataState } from '../../../enum/datastate.enum';
+import { Message } from '../../../interfaces/message';
+import { CampaignService } from '../../../services/campaign.service';
 
 @Component({
   selector: 'app-broadcast',

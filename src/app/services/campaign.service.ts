@@ -16,12 +16,13 @@ import {
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Message } from '../interfaces/message';
 import { Campaign } from '../interfaces/campaign';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CampaignService {
-  private readonly server: string = 'http://localhost:8080/secureapi';
+  private readonly server: string = environment.API_BASE_URL + '/secureapi';
   /**
    * How to install it
    * npm install @auth0/angular-jwt
