@@ -7,5 +7,5 @@ COPY . .
 RUN npm run build
 FROM nginx:stable
 COPY default.conf /etc/nginx/conf.d
-COPY --from=build /app/dist/canalsecureapi/ /usr/share/nginx/html
+COPY --from=build /app/dist/canalsecureapp/ /usr/share/nginx/html
 EXPOSE 80
