@@ -1,8 +1,8 @@
 services:
-  canalsecureapi:
-    container_name: securecanalcontainer
+  canalsecureapiapp:
+    container_name: securecanalappcontainer
     build: .
-    image: securecanal:v1
+    image: securecanalapp:v1
     ports:
       - 80:80
     expose:
