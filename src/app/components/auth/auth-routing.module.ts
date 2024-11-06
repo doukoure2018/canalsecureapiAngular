@@ -19,11 +19,11 @@ const Authroutes: Routes = [
     component: ResetpasswordComponent,
   },
   {
-    path: 'auth/secureapi/verify/account/:key',
+    path: 'secureapi/verify/account/:key',
     component: VerifyComponent,
   },
   {
-    path: 'auth/secureapi/verify/password/:key',
+    path: 'secureapi/verify/password/:key',
     component: VerifyComponent,
   },
 ];

@@ -18,6 +18,7 @@ import { User } from '../../interfaces/User';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-home',
@@ -56,12 +57,14 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private campaignService: CampaignService
+    private campaignService: CampaignService,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.homeState$ = this.campaignService.home$().pipe(
       map((response) => {
+        this.notification.onSuccess(response.message!);
         console.log(response);
         this.dataSubject.next(response);
         this.dataSource.data = response.data?.campaigns ?? [];
@@ -76,6 +79,7 @@ export class HomeComponent implements OnInit {
       }),
       startWith({ dataState: DataState.LOADING }),
       catchError((error: string) => {
+        this.notification.onError(error);
         return of({ dataState: DataState.ERROR, error });
       })
     );

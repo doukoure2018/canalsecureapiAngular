@@ -16,11 +16,9 @@ import {
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Message } from '../interfaces/message';
 import { Campaign } from '../interfaces/campaign';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class CampaignService {
   private readonly server: string = environment.API_BASE_URL + '/secureapi';
   /**

@@ -14,11 +14,9 @@ import { User } from '../interfaces/User';
 import { Compte } from '../interfaces/compte';
 import { SettingForm } from '../interfaces/setting';
 import { NewPasswordForm } from '../interfaces/newPasswordForm';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UserService {
   private readonly server: string = environment.API_BASE_URL + '/secureapi';
   /**

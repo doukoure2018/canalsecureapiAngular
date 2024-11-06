@@ -24,6 +24,7 @@
     "@angular/router": "^18.2.0",
     "@angular/ssr": "^18.2.0",
     "@auth0/angular-jwt": "^5.2.0",
+    "angular-notifier": "^14.0.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "date-fns": "^4.1.0",

@@ -12,6 +12,7 @@ import { TokenInterceptor } from '../interceptors/token.interceptor';
 import { UserService } from '../services/user.service';
 import { CampaignService } from '../services/campaign.service';
 import { HttpCacheService } from '../services/http.cache.service';
+import { NotificationService } from '../services/notification.service';
 
 @NgModule({
   providers: [
@@ -22,6 +23,7 @@ import { HttpCacheService } from '../services/http.cache.service';
       UserService,
       CampaignService,
       HttpCacheService,
+      NotificationService,
       { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
       { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
       provideAnimationsAsync(),

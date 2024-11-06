@@ -16,6 +16,7 @@ import { DataState } from '../../../enum/datastate.enum';
 import { Router } from '@angular/router';
 import { CampaignService } from '../../../services/campaign.service';
 import { NgForm } from '@angular/forms';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-newcampaign',
@@ -47,7 +48,8 @@ export class NewcampaignComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private campaignService: CampaignService
+    private campaignService: CampaignService,
+    private notification: NotificationService
   ) {}
 
   onTotalSmsChange(): void {
@@ -64,6 +66,7 @@ export class NewcampaignComponent implements OnInit {
   ngOnInit(): void {
     this.campaignState$ = this.campaignService.newCampaign$().pipe(
       map((response) => {
+        this.notification.onSuccess(response.message!);
         console.log(response);
         this.dataSubject.next(response);
         // get the balance sms
@@ -75,6 +78,7 @@ export class NewcampaignComponent implements OnInit {
       }),
       startWith({ dataState: DataState.LOADING }),
       catchError((error: string) => {
+        this.notification.onError(error);
         return of({ dataState: DataState.ERROR, error });
       })
     );
@@ -93,6 +97,7 @@ export class NewcampaignComponent implements OnInit {
       .createCampaign$(campaignForm.value)
       .pipe(
         map((response) => {
+          this.notification.onSuccess(response.message!);
           console.log(response);
           this.dataSubject.next(response);
           this.loadingDataSubject.next(false);
@@ -109,7 +114,7 @@ export class NewcampaignComponent implements OnInit {
         }),
         catchError((error: string) => {
           this.loadingDataSubject.next(false);
-
+          this.notification.onError(error);
           return of({
             dataState: DataState.ERROR,
             error,

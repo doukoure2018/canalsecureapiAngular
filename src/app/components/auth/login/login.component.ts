@@ -15,6 +15,7 @@ import { NgForm } from '@angular/forms';
 import { Key } from '../../../enum/key.enum';
 import { error } from 'console';
 import { response } from 'express';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +28,11 @@ export class LoginComponent implements OnInit {
   private emailSubject = new BehaviorSubject<string>('');
 
   readonly DataState = DataState;
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private notification: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.userService.isAuthenticated()
@@ -40,6 +45,7 @@ export class LoginComponent implements OnInit {
       .login$(loginForm.value.email, loginForm.value.password)
       .pipe(
         map((response) => {
+          this.notification.onDefault(response.message!);
           console.log(response);
           // if isUsingMfa is true
           if (response.data?.user?.usingMfa) {
@@ -76,6 +82,7 @@ export class LoginComponent implements OnInit {
           isUsingMfa: false,
         }),
         catchError((error: string) => {
+          this.notification.onError(error);
           return of({ dataState: DataState.ERROR, loginSuccess: false, error });
         })
       );

@@ -47,15 +47,18 @@ export class VerifyComponent implements OnInit {
             map((response) => {
               console.log(response);
               // when it is password we return an object of user or it is account verification
-              if (type === 'password' && response.data?.user) {
-                this.userSubject.next(response.data?.user);
-              } else {
-                this.userSubject.next(null);
-              }
+              // if (type === 'password' && response.data?.user) {
+              //   this.userSubject.next(response.data?.user);
+              // } else {
+              //   this.userSubject.next(null);
+              // }
+              type === 'password'
+                ? this.userSubject.next(response.data?.user!)
+                : null;
 
               return {
                 type,
-                title: 'Verified ..',
+                title: 'Verified!',
                 dataState: DataState.LOADED,
                 message: response.message,
                 verifySuccess: true,
@@ -63,7 +66,7 @@ export class VerifyComponent implements OnInit {
             }),
             startWith({
               type,
-              title: 'Verifie ..',
+              title: 'Verifying ..',
               dataState: DataState.LOADING,
               message: 'Please Wait while we are verifying your account',
               verifySuccess: false,

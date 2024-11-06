@@ -24,6 +24,7 @@ import {
 import { DataState } from '../../../enum/datastate.enum';
 import { Message } from '../../../interfaces/message';
 import { CampaignService } from '../../../services/campaign.service';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-broadcast',
@@ -83,7 +84,8 @@ export class BroadcastComponent implements OnInit, AfterViewInit {
 
   constructor(
     private activatedRouter: ActivatedRoute,
-    private campaignService: CampaignService
+    private campaignService: CampaignService,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -152,6 +154,7 @@ export class BroadcastComponent implements OnInit, AfterViewInit {
         .importFileMessage$(campaignId, userId, this.selectedFile)
         .pipe(
           map((response) => {
+            this.notification.onSuccess(response.message!);
             console.log('File uploaded successfully:', response);
             this.selectedFile = null;
             this.isLoadingSubject.next(false);
@@ -168,6 +171,7 @@ export class BroadcastComponent implements OnInit, AfterViewInit {
           catchError((error: string) => {
             console.error('Error uploading file:', error);
             this.isLoadingSubject.next(false);
+            this.notification.onError(error);
             return of({
               dataState: DataState.LOADED,
               appData: this.dataSubject.value ?? undefined,
@@ -266,7 +270,6 @@ export class BroadcastComponent implements OnInit, AfterViewInit {
     const campaign_id = +this.activatedRouter.snapshot.paramMap.get(
       this.CAMPAIGN_ID
     )!;
-
     this.campaignService
       .downloadReport$(campaign_id)
       .pipe(

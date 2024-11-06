@@ -10,6 +10,7 @@ import { CompteModule } from './components/compte/compte.module';
 import { ProfileModule } from './components/profile/profile.module';
 import { HomeModule } from './components/home/home.module';
 import { StatsModule } from './components/stats/stats.module';
+import { NotificationModule } from './notification.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +24,7 @@ import { StatsModule } from './components/stats/stats.module';
     HomeModule,
     StatsModule,
     AppRoutingModule,
+    NotificationModule,
   ],
   bootstrap: [AppComponent],
 })
